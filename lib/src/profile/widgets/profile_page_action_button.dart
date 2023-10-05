@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../responsive_text_styles.dart';
+import '../../responsive_text_styles.dart';
 
 class ActionButton extends StatelessWidget {
   final String text;

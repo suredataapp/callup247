@@ -1,5 +1,6 @@
-import 'package:callup247/src/02_onboarding/onboarding_choice_gradient_container.dart';
-import 'package:callup247/src/03_homepage/home_page.dart';
+import 'package:callup247/src/authentication/pages/customer_signup.dart';
+import 'package:callup247/src/onboarding/widgets/onboarding_choice_gradient_container.dart';
+import 'package:callup247/src/home/pages/guest_home_page.dart';
 import 'package:callup247/src/responsive_text_styles.dart';
 import 'package:flutter/material.dart';
 
@@ -36,7 +37,14 @@ class OnboardingChoiceScreen extends StatelessWidget {
                 SizedBox(height: MediaQuery.of(context).size.height * 0.025),
                 InkWell(
                   onTap: () {
-                    Future.delayed(const Duration(milliseconds: 300), () {});
+                    Future.delayed(const Duration(milliseconds: 300), () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              const CustomerSignUpScreen(),
+                        ),
+                      );
+                    });
                   },
                   radius: 350,
                   splashColor: Colors.greenAccent,
@@ -67,7 +75,8 @@ class OnboardingChoiceScreen extends StatelessWidget {
                       Future.delayed(const Duration(milliseconds: 300), () {
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
-                            builder: (BuildContext context) => const HomePage(),
+                            builder: (BuildContext context) =>
+                                const GuestHomePage(),
                           ),
                         );
                       });

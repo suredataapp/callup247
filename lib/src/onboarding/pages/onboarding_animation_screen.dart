@@ -4,7 +4,7 @@ import 'dart:async'; // Import the dart:async library
 
 import 'onboarding_choice_screen.dart';
 
-import '../responsive_text_styles.dart';
+import '../../responsive_text_styles.dart';
 
 class OnboardingAnimationScreen extends StatefulWidget {
   const OnboardingAnimationScreen({super.key});

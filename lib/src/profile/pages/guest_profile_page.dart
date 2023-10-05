@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-import 'profile_page_action_button.dart';
+import '../widgets/profile_page_action_button.dart';
 
-import '../responsive_text_styles.dart';
+import '../../responsive_text_styles.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+class GuestProfilePage extends StatefulWidget {
+  const GuestProfilePage({super.key});
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<GuestProfilePage> createState() => _GuestProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _GuestProfilePageState extends State<GuestProfilePage> {
   bool isOnline = true;
   @override
   Widget build(BuildContext context) {

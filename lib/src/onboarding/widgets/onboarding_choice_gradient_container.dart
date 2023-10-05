@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../responsive_text_styles.dart';
+import '../../responsive_text_styles.dart';
 
 class GradientContainer extends StatelessWidget {
   final String title;

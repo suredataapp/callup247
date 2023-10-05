@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import '../04_profile/profile_page.dart';
-import '../responsive_text_styles.dart';
-import 'service_provider_card.dart';
+import '../../profile/pages/guest_profile_page.dart';
+import '../../responsive_text_styles.dart';
+import '../widgets/service_provider_card.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class GuestHomePage extends StatefulWidget {
+  const GuestHomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<GuestHomePage> createState() => _GuestHomePageState();
 }
 
-class _HomePageState extends State<HomePage>
+class _GuestHomePageState extends State<GuestHomePage>
     with SingleTickerProviderStateMixin {
   late AnimationController _acontroller;
 
@@ -617,7 +617,7 @@ class _HomePageState extends State<HomePage>
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (BuildContext context) =>
-                                        const ProfilePage(),
+                                        const GuestProfilePage(),
                                   ),
                                 );
                               },
@@ -639,7 +639,7 @@ class _HomePageState extends State<HomePage>
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (BuildContext context) =>
-                                        const ProfilePage(),
+                                        const GuestProfilePage(),
                                   ),
                                 );
                               },
@@ -680,7 +680,7 @@ class _HomePageState extends State<HomePage>
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (BuildContext context) =>
-                                          const ProfilePage(),
+                                          const GuestProfilePage(),
                                     ),
                                   );
                                 },
@@ -714,7 +714,7 @@ class _HomePageState extends State<HomePage>
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (BuildContext context) =>
-                                          const ProfilePage(),
+                                          const GuestProfilePage(),
                                     ),
                                   );
                                 },
