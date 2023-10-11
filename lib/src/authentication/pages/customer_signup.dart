@@ -27,8 +27,27 @@ class _CustomerSignUpScreenState extends State<CustomerSignUpScreen> {
     }
   }
 
+  // use case upload image
+  Future<void> _uploadImage() async {
+    final filename = _fullnameController.text;
+    try {
+      await supabase.storage.from('avatars').upload(
+            filename,
+            _image!,
+            fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+          );
+      if (mounted) {
+        print('img uploaded');
+      }
+    } on PostgrestException catch (error) {
+      print('postgres error: ${error.message}');
+    } catch (error) {
+      print('Unexpected error');
+    }
+  }
+
   // use case sign up
-  Future<void> _signup() async {
+  Future<void> _signup(BuildContext context) async {
     setState(() {
       loading = true;
     });
@@ -39,7 +58,8 @@ class _CustomerSignUpScreenState extends State<CustomerSignUpScreen> {
     final state = stateValue;
     final city = cityValue;
     final homeaddress = _homeadressController.text.trim();
-    final displaypicture = _image;
+    final displaypicture =
+        supabase.storage.from('avatars').getPublicUrl(_fullnameController.text);
 
     final details = {
       'full_name': fullname,
@@ -49,7 +69,7 @@ class _CustomerSignUpScreenState extends State<CustomerSignUpScreen> {
       'state': state,
       'city': city,
       'home_address': homeaddress,
-      'display_picture': ''
+      'display_picture': displaypicture
     };
 
     try {
@@ -57,24 +77,24 @@ class _CustomerSignUpScreenState extends State<CustomerSignUpScreen> {
       await supabase.from('customers').insert(details);
       if (mounted) {
         print('1');
-        const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Welcome to callup247'),
           backgroundColor: Colors.greenAccent,
-        );
+        ));
       }
     } on PostgrestException catch (error) {
       print(error.message);
-      SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         duration: const Duration(seconds: 5),
         content: Text(error.message),
         backgroundColor: Colors.red,
-      );
+      ));
     } catch (error) {
       print('3');
-      const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Unexpected Error Occured'),
         backgroundColor: Colors.red,
-      );
+      ));
     } finally {
       print(4);
       if (mounted) {
@@ -220,6 +240,7 @@ class _CustomerSignUpScreenState extends State<CustomerSignUpScreen> {
                   SizedBox(height: MediaQuery.of(context).size.height * 0.01),
                   // Country Picker
                   CSCPicker(
+                    flagState: CountryFlag.SHOW_IN_DROP_DOWN_ONLY,
                     dropdownDecoration: BoxDecoration(
                         color: const Color(0xFF13CAF1),
                         borderRadius: BorderRadius.circular(6)),
@@ -308,7 +329,8 @@ class _CustomerSignUpScreenState extends State<CustomerSignUpScreen> {
                           onPressed: () {
                             // Add your sign-up logic here.
                             if (_formKey.currentState!.validate()) {
-                              _signup();
+                              _uploadImage();
+                              _signup(context);
                             }
                           },
                           child: Text(
