@@ -1,8 +1,10 @@
+import 'package:callup247/main.dart';
 import 'package:callup247/src/responsive_text_styles.dart';
 import 'package:csc_picker/csc_picker.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CustomerSignUpScreen extends StatefulWidget {
   const CustomerSignUpScreen({super.key});
@@ -12,6 +14,7 @@ class CustomerSignUpScreen extends StatefulWidget {
 }
 
 class _CustomerSignUpScreenState extends State<CustomerSignUpScreen> {
+  // use case pick image
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
 
@@ -24,12 +27,89 @@ class _CustomerSignUpScreenState extends State<CustomerSignUpScreen> {
     }
   }
 
+  // use case sign up
+  Future<void> _signup() async {
+    setState(() {
+      loading = true;
+    });
+    final fullname = _fullnameController.text.trim();
+    final phonenumber = _phonenumberController.text.trim();
+    final emailaddress = _emailaddressController.text.trim();
+    final country = countryValue;
+    final state = stateValue;
+    final city = cityValue;
+    final homeaddress = _homeadressController.text.trim();
+    final displaypicture = _image;
+
+    final details = {
+      'full_name': fullname,
+      'phone_number': phonenumber,
+      'email_address': emailaddress,
+      'country': country,
+      'state': state,
+      'city': city,
+      'home_address': homeaddress,
+      'display_picture': ''
+    };
+
+    try {
+      print(0);
+      await supabase.from('customers').insert(details);
+      if (mounted) {
+        print('1');
+        const SnackBar(
+          content: Text('Welcome to callup247'),
+          backgroundColor: Colors.greenAccent,
+        );
+      }
+    } on PostgrestException catch (error) {
+      print(error.message);
+      SnackBar(
+        duration: const Duration(seconds: 5),
+        content: Text(error.message),
+        backgroundColor: Colors.red,
+      );
+    } catch (error) {
+      print('3');
+      const SnackBar(
+        content: Text('Unexpected Error Occured'),
+        backgroundColor: Colors.red,
+      );
+    } finally {
+      print(4);
+      if (mounted) {
+        print('5');
+        setState(() {
+          loading = false;
+        });
+      }
+    }
+  }
+
+  // variables
   bool isPasswordVisible = false;
   String? countryValue = "";
   String? stateValue = "";
   String? cityValue = "";
   File? _image;
+  final _fullnameController = TextEditingController();
+  final _phonenumberController = TextEditingController();
+  final _emailaddressController = TextEditingController();
+  final _homeadressController = TextEditingController();
+  var loading = false;
+  final _formKey = GlobalKey<FormState>();
 
+// dispose
+  @override
+  void dispose() {
+    _emailaddressController.dispose();
+    _fullnameController.dispose();
+    _homeadressController.dispose();
+    _phonenumberController.dispose();
+    super.dispose();
+  }
+
+  // build method
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,10 +140,12 @@ class _CustomerSignUpScreenState extends State<CustomerSignUpScreen> {
           child: Padding(
             padding: const EdgeInsets.all(32.0),
             child: Form(
+              key: _formKey,
               child: Column(
                 children: [
                   // full name
                   TextFormField(
+                    controller: _fullnameController,
                     cursorColor: Colors.white,
                     textCapitalization: TextCapitalization.words,
                     style: responsiveTextStyle(context, 16, Colors.white, null),
@@ -82,6 +164,7 @@ class _CustomerSignUpScreenState extends State<CustomerSignUpScreen> {
                   ),
                   // Phone Number
                   TextFormField(
+                    controller: _phonenumberController,
                     cursorColor: Colors.white,
                     keyboardType: TextInputType.phone,
                     style: responsiveTextStyle(context, 16, Colors.white, null),
@@ -108,6 +191,7 @@ class _CustomerSignUpScreenState extends State<CustomerSignUpScreen> {
                   ),
                   // email address
                   TextFormField(
+                    controller: _emailaddressController,
                     cursorColor: Colors.white,
                     keyboardType: TextInputType.emailAddress,
                     style: responsiveTextStyle(context, 16, Colors.white, null),
@@ -168,6 +252,7 @@ class _CustomerSignUpScreenState extends State<CustomerSignUpScreen> {
                   ),
                   // home address
                   TextFormField(
+                    controller: _homeadressController,
                     cursorColor: Colors.white,
                     textCapitalization: TextCapitalization.words,
                     keyboardType: TextInputType.streetAddress,
@@ -183,56 +268,6 @@ class _CustomerSignUpScreenState extends State<CustomerSignUpScreen> {
                         return 'Please enter your home address';
                       }
                       return null; // Return null to indicate a valid input.
-                    },
-                  ),
-                  // Password
-                  TextFormField(
-                    cursorColor: Colors.white,
-                    style: responsiveTextStyle(context, 16, Colors.white, null),
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      labelStyle:
-                          responsiveTextStyle(context, 14, Colors.black, null),
-                      focusedBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black87)),
-                      suffixIcon: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isPasswordVisible = !isPasswordVisible;
-                          });
-                        },
-                        child: Icon(
-                          isPasswordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ),
-                    obscureText: !isPasswordVisible,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter a password';
-                      }
-                      // Password strength validation criteria
-                      const lengthCriteria = 8; // Minimum length requirement
-                      final uppercaseCriteria = RegExp(r'[A-Z]');
-                      final lowercaseCriteria = RegExp(r'[a-z]');
-                      final digitCriteria = RegExp(r'[0-9]');
-                      final specialCharCriteria =
-                          RegExp(r'[!@#$%^&*(),.?":{}|<>]');
-
-                      if (value.length < lengthCriteria) {
-                        return 'Password must be at least $lengthCriteria characters long';
-                      }
-
-                      if (!uppercaseCriteria.hasMatch(value) ||
-                          !lowercaseCriteria.hasMatch(value) ||
-                          !digitCriteria.hasMatch(value) ||
-                          !specialCharCriteria.hasMatch(value)) {
-                        return 'Password must include uppercase, lowercase, digit, and special characters';
-                      }
-                      return null;
                     },
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.01),
@@ -264,20 +299,24 @@ class _CustomerSignUpScreenState extends State<CustomerSignUpScreen> {
                       ],
                     ),
                   ),
-
                   SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF039fdc)),
-                    onPressed: () {
-                      // Add your sign-up logic here.
-                    },
-                    child: Text(
-                      'Sign Up',
-                      style: responsiveTextStyle(
-                          context, 14, Colors.black, FontWeight.bold),
-                    ),
-                  ),
+                  loading
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF039fdc)),
+                          onPressed: () {
+                            // Add your sign-up logic here.
+                            if (_formKey.currentState!.validate()) {
+                              _signup();
+                            }
+                          },
+                          child: Text(
+                            'Sign Up',
+                            style: responsiveTextStyle(
+                                context, 14, Colors.black, FontWeight.bold),
+                          ),
+                        ),
                 ],
               ),
             ),
